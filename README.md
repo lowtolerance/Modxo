@@ -4,17 +4,24 @@
 [![.NET](https://github.com/Team-Resurgent/Modxo/actions/workflows/BundleModxo.yml/badge.svg)](https://github.com/Team-Resurgent/Modxo/actions/workflows/BundleModxo.yml)
 [![Discord](https://img.shields.io/badge/chat-on%20discord-7289da.svg?logo=discord)](https://discord.gg/VcdSfajQGK)
 
-#
+#Modxo
 
-Modxo (pronnounced as "Modsho") is a Xbox LPC Port firmware that converts the Raspberry Pi Pico
-into an Original Xbox Modchip that allows running a bios.
+Modxo (pronounced "Modsho") is an RP2040 firmware that converts a Raspberry Pi Pico (or similar device) into an Original Xbox-compatible LPC peripheral device. 
+
+Modxo can be used for loading an Xbox BIOS image from the LPC port, as well as for interfacing compatible Xbox software with peripheral devices such as HD44780 displays or addressable RGB LEDs.
 
 # How to Install
-### 1. Requirements
-- Working LPC Port
-- Original Raspberry Pi Pico or RP2040 Zero (There are some clone boards that are not compatible)
-- 4 100 Ohm resistors (tested with 1/4 W resistors)
 
+### 1. Requirements
+* An Xbox (any revision) with a working LPC Port. 1.6 Xboxes will need an LPC rebuild.  
+* A RP2040 development board. There may be some clone boards that are not compatible. The following boards are known to work with modxo:
+- * Official Raspberry Pi Pico
+- * YD-RP2040 
+- * RP2040 Zero
+- * RP-Tiny 
+- 
+* 4 100 Ohm resistors (tested with 1/4 W resistors) 
+ 
 ### 2. Wiring diagrams
 
 #### LPC Header
@@ -22,20 +29,20 @@ into an Original Xbox Modchip that allows running a bios.
 
 * Note: D0 is required for versions 1.0 - 1.5 unless it is grounded.
 * Note: LFrame and LPC 3.3V connections are required by version 1.6 or when connecting the Pico to USB port.
-* Note: LFrame is not required for USB debug.
-* Note: LPC Rebuild is required for version 1.6
+* Note: LFrame is not required for USB debugging.
+* Note: An LPC Rebuild is required for version 1.6
 
-#### Official pico
+#### Official Pico
 
 ![LPC Header wiring diagram](images/official_pinout.png)
 
-* Note: Please add the diode if connecting the Pico to USB. This avoid powering the LPC 5V Pin from the USB cable.
+* Note: Please add the diode if connecting the Pico to USB. This avoids powering the LPC 5V Pin from the USB cable.
 
 #### YD2040
 
 ![LPC Header wiring diagram](images/YDRP2040_pinout.png)
 
-* Note: Dont forget to add solder to jumper R68 if using the onboard RGB Led
+* Note: Don’t forget to add solder to jumper R68 if using the onboard RGB LED.
 
 ### 3. Flashing firmware
 
@@ -52,7 +59,6 @@ into an Original Xbox Modchip that allows running a bios.
 
 # Firmware Build Instructions
 
-#### Windows
 1.- Download and Install [Visual Studio Code](https://code.visualstudio.com/download)
 
 2.- Install extension: "Raspberry Pi Pico"
@@ -64,32 +70,37 @@ into an Original Xbox Modchip that allows running a bios.
 ![SDK 1.5.1](images/sdk.png)
 
 4.- After SDK is installed, git submodules must be updated from command line by running:
+
+
+**Windows:**
+
 ```
 cd %HOMEPATH%\.pico-sdk\sdk\1.5.1
-git submodule update --init --recursive
+git submodule update —init —recursive
+
 ```
-5.- Go to Raspberry Pi Pico Tab and click "Configure CMake"
+
+
+**Linux:** 
+TODO
+**MacOS:** 
+TODO
+
+5.- Go to Raspberry Pi Pico Tab in VS Code by clicking the Pico icon in the sidebar and from there click "Configure CMake"
 
 6.- Go to Run and Debug Tab and select Build for your board
 
 7.- Click "Start Debugging" (Green arrow)
 
-8.- UF2 File will be generated on Build folder
-
-
-#### Linux
-  -Todo
-
-#### Mac
-  -Todo
+8.- UF2 File will in the `build` folder generated during the compile process
 
 # Known bugs
  * Windbg get stuck sometimes when connected to Modxo SuperIO's serial port
 
 # Notes
- * Currently, Modxo uses the ID 0xAF. Any derivative hardware with significant changes should ideally use a different ID. This is so that software like PrometheOS can base features available from that returned ID.
+ * Currently, Modxo uses the ID 0xAF. Any derivative hardware with significant changes should ideally use a different ID. This is so that software like PrometheOS can target features appropriately.
  
-
+ 
 # Attribution Requirement
 
      a) **Attribution:**  
