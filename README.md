@@ -18,10 +18,10 @@ No specialized hardware or complicated tooling is needed to load Modxo on a comp
 ### 1. Requirements
 - An Xbox (any revision) with a working LPC Port. 1.6 Xboxes will need an LPC rebuild.
 - A RP2040 development board. There may be some clone boards that are not compatible. The following boards are known to work with Modxo:
-- - Official Raspberry Pi Pico or RP2040 Zero (There are some clone boards that are not compatible)
+- - [Official Raspberry Pi Pico or RP2040 Zero (There are some clone boards that are not compatible)](https://www.raspberrypi.com/products/raspberry-pi-pico/)
+  - [RP2040 Zero](https://www.waveshare.com/wiki/RP2040-Zero)
+  - [RP-Tiny](https://www.waveshare.com/rp2040-tiny.htm)
   - YD-RP2040
-  - RP2040 Zero
-  - RP-Tiny
 - 4 100 Ohm resistors (tested with 1/4 W resistors)
 
 ### 2. Wiring diagrams
@@ -29,18 +29,19 @@ No specialized hardware or complicated tooling is needed to load Modxo on a comp
 #### LPC Header
 ![LPC Header wiring diagram](images/lpc_header_wiring.png)
 
-* Note: D0 is required for versions 1.0 - 1.5 unless it is grounded.
-* Note: LFrame and LPC 3.3V connections are required by version 1.6 or when connecting the Pico to USB port.
-* Note: LFrame is not required for USB debug.
-* Note: LPC Rebuild is required for version 1.6
+Notes:
+* D0 is required for versions 1.0 - 1.5 unless it is grounded.
+* LFrame and LPC 3.3V connections are required by version 1.6 or when connecting the Pico to USB port.
+* LFrame is not required for USB debug.
+* LPC Rebuild is required for version 1.6
 
-#### Official pico
+#### Official Raspberry Pi Pico
 
 ![LPC Header wiring diagram](images/official_pinout.png)
 
 * Note: Please add the diode if connecting the Pico to USB. This avoid powering the LPC 5V Pin from the USB cable.
 
-#### YD2040
+#### YD-RP2040
 
 ![LPC Header wiring diagram](images/YDRP2040_pinout.png)
 
