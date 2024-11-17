@@ -36,12 +36,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tusb.h"
 
 #include "modxo/modxo.h"
-#include "modxo/text_display/hd44780.h"
 #include "modxo_pinout.h"
 
 #define SYS_FREQ_IN_KHZ (264 * 1000)
 
-MODXO_TD_DRIVER_T text_display_driver;
 bool reset_pin = false;
 
 void core1_main()
@@ -77,6 +75,12 @@ void pin_3_3v_falling()
     modxo_low_power_mode();
 }
 
+void pin_3_3v_high()
+{
+    gpio_set_irq_enabled(LPC_ON, GPIO_IRQ_LEVEL_HIGH, false);
+    set_sys_clock_khz(SYS_FREQ_IN_KHZ, true);
+}
+
 void core0_irq_handler(uint gpio, uint32_t event)
 {
     if (gpio == LPC_RESET && (event & GPIO_IRQ_EDGE_FALL) != 0)
@@ -92,6 +96,11 @@ void core0_irq_handler(uint gpio, uint32_t event)
     if (gpio == LPC_ON && (event & GPIO_IRQ_EDGE_FALL) != 0)
     {
         pin_3_3v_falling();
+    }
+
+    if (gpio == LPC_ON && (event & GPIO_IRQ_LEVEL_HIGH) != 0)
+    {
+        pin_3_3v_high();
     }
 }
 
@@ -129,9 +138,8 @@ int main(void)
     gpio_set_dir(LED_STATUS_PIN, GPIO_OUT);
     gpio_put(LED_STATUS_PIN, 1);
 
-    hd44780_i2c_init(&text_display_driver, 0x27, HD44780_LCDTYPE_20X4); // Set your LCD Type, TODO: NVM parameter config
     modxo_init_interrupts();
-    modxo_init(&text_display_driver);
+    modxo_init();
 
     multicore_reset_core1();
     multicore_launch_core1(core1_main);

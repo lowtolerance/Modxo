@@ -35,13 +35,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "lpc/lpc_interface.h"
 #include "lpc/lpc_log.h"
 #include "flashrom/flashrom.h"
-#include "superio/DATA_STORE.h"
+#include "data_store/data_store.h"
 #include "superio/LPC47M152.h"
-#include "superio/UART_16550.h"
-#include "superio/WS2812.h"
+#include "superio/uart_16550.h"
+#include "ws2812/ws2812.h"
+#include "legacy_display/legacy_display.h"
 #include "hardware/watchdog.h"
 
-static MODXO_TD_DRIVER_T *td_driver = NULL;
 extern uint8_t current_led_color;
 
 static void modxo_lpcmem_init()
@@ -55,8 +55,8 @@ static void modxo_lpcio_init()
     uart_16550_init();
     data_store_init();
     ws2812_init();
-
-    modxo_ports_init(td_driver);
+    legacy_display_init();
+    modxo_ports_init();
 }
 
 void modxo_poll_core1()
@@ -66,9 +66,7 @@ void modxo_poll_core1()
 
 void modxo_poll_core0()
 {
-    if (td_driver)
-        td_driver->poll();
-        // Lpc log poll
+    legacy_display_poll();
 #ifdef LPC_LOGGING
     lpc_interface_poll();
 #endif
@@ -92,7 +90,9 @@ void modxo_lpc_reset_on()
 
 void software_reset()
 {
+    // M0+ AIRCR Register
     //*((volatile uint32_t*)(PPB_BASE + 0x0ED0C)) = 0x5FA0004;
+
     watchdog_enable(1, 1);
     while(1);
 }
@@ -105,14 +105,9 @@ void modxo_low_power_mode()
     // Modxo sleep
 }
 
-void modxo_init(MODXO_TD_DRIVER_T *drv)
+void modxo_init()
 {
     lpc_interface_init();
-
     modxo_lpcmem_init();
-
-    if (drv && drv->command && drv->poll && drv->data)
-        td_driver = drv;
-
     modxo_lpcio_init();
 }

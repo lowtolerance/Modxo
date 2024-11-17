@@ -6,11 +6,23 @@
 
 #Modxo
 
-Modxo (pronounced "Modsho") is an RP2040 firmware that converts a Raspberry Pi Pico (or similar device) into an Original Xbox-compatible LPC peripheral device. 
+Modxo (pronnounced "Modsho") is an RP2040 firmware that converts a Raspberry Pi Pico (or similar RP2040-based device) into an Original Xbox-compatible LPC peripheral device. 
 
-Modxo can be used for loading an Xbox BIOS image from the LPC port, as well as for interfacing compatible Xbox software with peripheral devices such as HD44780 displays or addressable RGB LEDs.
+Modxo can be used for loading an Xbox BIOS image from the LPC port, as well as for interfacing comaptible Xbox software with peripheral devices such as HD44480 displays or addressable RGB LEDs.
+
+Modxo is *not* a modchip. Whereas legacy modchips rely on largely obsolete hardware like LPC flash storage chips or expensive programmable logic ICs, Modxo is the first fully software-based implementation of the LPC protocol. It is open source software, mostly written in C, developed using the official Raspberry Pi Pico SDK and designed to run on RP2040-based hardware. 
+
+No specialized hardware or complicated tooling is needed to load Modxo on a compatible device -- in most cased just a USB cable is all that is necessary. And installation works much like legacy devices -- all that is needed for installation is a compatible RP2040-based device, a few resistors, wire and basic soldering equipment. Custom PCBs exist to simplify the installation process even further.
 
 # How to Install
+### 1. Requirements
+- An Xbox (any revision) with a working LPC Port. 1.6 Xboxes will need an LPC rebuild.
+- A RP2040 development board. There may be some clone boards that are not compatible. The following boards are known to work with Modxo:
+- - Official Raspberry Pi Pico or RP2040 Zero (There are some clone boards that are not compatible)
+  - YD-RP2040
+  - RP2040 Zero
+  - RP-Tiny
+- 4 100 Ohm resistors (tested with 1/4 W resistors)
 
 ### 1. Requirements
 * An Xbox (any revision) with a working LPC Port. 1.6 Xboxes will need an LPC rebuild.  
@@ -44,6 +56,12 @@ Modxo can be used for loading an Xbox BIOS image from the LPC port, as well as f
 
 * Note: Don’t forget to add solder to jumper R68 if using the onboard RGB LED.
 
+#### RP2040 Zero
+
+![LPC Header wiring diagram](images/RP2040_Zero_pinout.png)
+
+* Note: USB Port doesn't have a diode, so it is not recommended to connect usb cable while connected to the XBOX
+
 ### 3. Flashing firmware
 
 #### Packing Bios
@@ -75,9 +93,8 @@ Modxo can be used for loading an Xbox BIOS image from the LPC port, as well as f
 **Windows:**
 
 ```
-cd %HOMEPATH%\.pico-sdk\sdk\1.5.1
-git submodule update —init —recursive
-
+cd %HOMEPATH%\.pico-sdk\sdk\2.0.0
+git submodule update --init --recursive
 ```
 
 
@@ -93,13 +110,49 @@ TODO
 7.- Click "Start Debugging" (Green arrow)
 
 8.- UF2 File will in the `build` folder generated during the compile process
+# Docker
+#### Setup
+Build your base docker image with
+```
+docker build -t modxo-builder .
+```
+
+#
+#### Firmware Build
+```
+docker compose run --rm builder
+```
+
+Output will be `out/modxo_[pinout].uf2`
+
+There are also some extra parameters that can be passed to the build script:
+
+- MODXO_PINOUT=`official_pico` | `yd_rp2040` | `rp2040_zero` - Default is `official_pico`.
+
+- CLEAN=`y`: triggers a clean build. Default is disabled.
+
+- BUILD_TYPE=`Release` | `Debug` - Default is `Debug`.
+
+
+_Examples:_
+```
+MODXO_PINOUT=rp2040_zero BUILD_TYPE=Release docker compose run --rm builder
+```
+```
+CLEAN MODXO_PINOUT=yd_rp2040 docker compose run --rm builder
+```
+
+#### Packing Bios locally
+Place your bios file named `bios.bin` in this directory or place any bios files (regardless of their name) in the bios directory
+```
+docker compose run --rm bios2uf2
+```
 
 # Known bugs
  * Windbg get stuck sometimes when connected to Modxo SuperIO's serial port
 
 # Notes
  * Currently, Modxo uses the ID 0xAF. Any derivative hardware with significant changes should ideally use a different ID. This is so that software like PrometheOS can target features appropriately.
- 
  
 # Attribution Requirement
 
